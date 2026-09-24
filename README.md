@@ -8,9 +8,7 @@
 
 - Equities
 
-- Forward contracts
-
-- Futures contracts
+- Forwards & Futures
 
 ## Disclaimer
 
