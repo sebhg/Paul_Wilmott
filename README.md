@@ -9,8 +9,7 @@ Each chapter is summarized in a single PDF written in LaTeX.
 &nbsp;
 
 ## Contents
-### 01 &nbsp;·&nbsp; Markets & Products &nbsp;&nbsp; <img src="assets/in-progress.svg" height="16">
+
+### 01 &nbsp;·&nbsp; Markets & Products &nbsp;&nbsp; <a href="../../issues/1"><img src="assets/in-progress-button.svg" alt="In progress" height="30" align="center"></a>
 
 The Price of Time
-
-<a href="../../issues/1"><img src="assets/progress-button.svg" alt="Track progress" height="36"></a>
