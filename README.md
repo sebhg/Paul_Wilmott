@@ -10,7 +10,7 @@ Each chapter is summarized in a single PDF written in LaTeX.
 
 ## Contents
 
-### 01 &nbsp;·&nbsp; Markets & Products &nbsp;&nbsp; <img src="assets/ch01.svg" height="16">
+### 01 &nbsp;·&nbsp; Markets & Products &nbsp;&nbsp; ![Progress](https://progress-bar.xyz/10/?width=130&color=2ea44f)
 
 The Price of Time
 
