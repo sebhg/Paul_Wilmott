@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Price of Time</title>
+<title>Chapter 01 — Markets &amp; Products</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
@@ -32,6 +32,23 @@
   .vol b{display:inline-block;border:1px solid rgba(255,255,255,.9);border-radius:4px;padding:2px 9px;margin-bottom:6px;font-weight:600}
   @media (max-width:640px){.vol{margin-left:0;text-align:left}.chap{font-size:48px}}
 
+  /* ---------- Tabs ---------- */
+  nav.tabs{position:sticky;top:0;z-index:5;background:rgba(251,252,254,.92);backdrop-filter:blur(8px);
+           -webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .tablist{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+  .tablist::-webkit-scrollbar{display:none}
+  .tab{position:relative;border:0;background:none;color:var(--soft);font:500 15px var(--sans);
+       padding:16px 14px 15px;cursor:pointer;white-space:nowrap}
+  .tab:first-child{padding-left:0}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected=true]{color:var(--navy);font-weight:600}
+  .tab[aria-selected=true]::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:2px;
+       border-radius:2px;background:var(--navy)}
+  .tab:first-child[aria-selected=true]::after{left:0}
+  .panel[hidden]{display:none}
+  .panel{animation:in .25s ease-out}
+  @keyframes in{from{opacity:0}to{opacity:1}}
+
   /* ---------- Chart ---------- */
   .stage{margin-top:18px;position:relative}
   svg{display:block;width:100%;height:auto;overflow:visible}
@@ -49,13 +66,14 @@
   .fade{opacity:0;animation:fade .8s ease-out .9s forwards}
   @keyframes draw{to{stroke-dashoffset:0}}
   @keyframes fade{to{opacity:1}}
-  @media (prefers-reduced-motion:reduce){.draw{animation:none;stroke-dasharray:none}.fade{animation:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){.draw{animation:none;stroke-dasharray:none}.fade,.panel{animation:none;opacity:1}}
 
   /* ---------- Controls ---------- */
   .controls{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin:18px 0 0;padding:22px 0;
             border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .controls.two{grid-template-columns:repeat(2,1fr)}
   @media (max-width:820px){.controls{grid-template-columns:1fr 1fr}}
-  @media (max-width:480px){.controls{grid-template-columns:1fr}}
+  @media (max-width:480px){.controls,.controls.two{grid-template-columns:1fr}}
   .ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--soft);margin-bottom:10px}
   .ctrl output{font:600 18px var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
   .ctrl i{font-family:var(--serif)}
@@ -80,6 +98,7 @@
   .res{padding:0 20px 0 0;align-self:start}
   .key{display:inline-block;width:22px;height:3px;border-radius:2px;background:var(--c);vertical-align:middle;margin-right:9px}
   .key.dash{background:repeating-linear-gradient(90deg,var(--c) 0 4px,transparent 4px 8px)}
+  .key.area{height:10px;border-radius:2px;background:linear-gradient(180deg,rgba(104,140,207,.45),rgba(104,140,207,.12))}
   .res .name{font-size:14px;color:var(--soft)}
   .res .val{font:600 26px/1.25 var(--sans);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
   .gain{background:var(--mist);border-radius:10px;padding:14px 16px;align-self:start}
@@ -94,64 +113,113 @@
   <div class="wrap band">
     <div class="chap" aria-hidden="true">01</div>
     <div class="titles">
-      <h1>The Price of Time</h1>
-      <p>Watch an investment grow under simple, discrete and continuous compounding.</p>
+      <h1>Markets &amp; Products</h1>
+      <p>Interactive charts for Chapter 1. Move the sliders to see each idea at work.</p>
     </div>
     <div class="vol"><b>Volume I</b><br>Paul Wilmott on<br>Quantitative Finance</div>
   </div>
 </header>
 
-<main class="wrap">
-  <div class="readout">
-    <div class="res" style="--c:var(--gray)">
-      <div class="name"><span class="key"></span>Simple</div>
-      <div class="val" id="vS"></div>
-    </div>
-    <div class="res" style="--c:var(--sky)">
-      <div class="name"><span class="key"></span>Discrete</div>
-      <div class="val" id="vD"></div>
-    </div>
-    <div class="res" style="--c:var(--navy)">
-      <div class="name"><span class="key dash"></span>Continuous</div>
-      <div class="val" id="vC"></div>
-    </div>
-    <div class="gain">
-      <p>Interest on interest earns you</p>
-      <strong id="vG"></strong>
-      <p id="vGp"></p>
-    </div>
+<nav class="tabs">
+  <div class="wrap tablist" role="tablist" aria-label="Interactive charts">
+    <button class="tab" role="tab" id="tab-compounding" aria-controls="compounding" data-tab="compounding">Compounding</button>
+    <button class="tab" role="tab" id="tab-taylor" aria-controls="taylor" data-tab="taylor">Taylor expansion</button>
   </div>
-  <div class="stage" id="stage">
-    <svg id="svg" viewBox="0 0 1000 470" role="img" aria-labelledby="chartDesc">
-      <desc id="chartDesc">Value of the investment over time under simple, discrete and continuous compounding.</desc>
-    </svg>
-    <div class="tip" id="tip" role="status" aria-live="polite"></div>
-  </div>
+</nav>
 
-  <div class="controls">
-    <div class="ctrl">
-      <label for="M"><span>Initial investment</span> <output id="oM"></output></label>
-      <input id="M" type="range" min="10" max="10000" step="10" value="1000">
-    </div>
-    <div class="ctrl">
-      <label for="R"><span>Annual rate <i>r</i></span> <output id="oR"></output></label>
-      <input id="R" type="range" min="0" max="25" step="0.25" value="8">
-    </div>
-    <div class="ctrl">
-      <label for="N"><span>Horizon</span> <output id="oN"></output></label>
-      <input id="N" type="range" min="1" max="60" step="1" value="30">
-    </div>
-    <div class="ctrl">
-      <label id="mLab"><span>Compounding per year <i>m</i></span> <output id="oMf"></output></label>
-      <div class="seg" role="group" aria-labelledby="mLab" id="seg">
-        <button data-m="1" aria-pressed="false">1</button>
-        <button data-m="2" aria-pressed="false">2</button>
-        <button data-m="4" aria-pressed="true">4</button>
-        <button data-m="12" aria-pressed="false">12</button>
-        <button data-m="365" aria-pressed="false">365</button>
+<main class="wrap">
+
+  <!-- ==================== TAB 1 : COMPOUNDING ==================== -->
+  <section class="panel" id="compounding" role="tabpanel" aria-labelledby="tab-compounding">
+    <div class="readout">
+      <div class="res" style="--c:var(--gray)">
+        <div class="name"><span class="key"></span>Simple</div>
+        <div class="val" id="vS"></div>
+      </div>
+      <div class="res" style="--c:var(--sky)">
+        <div class="name"><span class="key"></span>Discrete</div>
+        <div class="val" id="vD"></div>
+      </div>
+      <div class="res" style="--c:var(--navy)">
+        <div class="name"><span class="key dash"></span>Continuous</div>
+        <div class="val" id="vC"></div>
+      </div>
+      <div class="gain">
+        <p>Interest on interest earns you</p>
+        <strong id="vG"></strong>
+        <p id="vGp"></p>
       </div>
     </div>
-  </div>
+
+    <div class="stage" id="stageC">
+      <svg id="svgC" viewBox="0 0 1000 470" role="img" aria-label="Value of the investment over time under simple, discrete and continuous compounding"></svg>
+      <div class="tip" id="tipC" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="controls">
+      <div class="ctrl">
+        <label for="M"><span>Initial investment</span> <output id="oM"></output></label>
+        <input id="M" type="range" min="10" max="10000" step="10" value="1000">
+      </div>
+      <div class="ctrl">
+        <label for="R"><span>Annual rate <i>r</i></span> <output id="oR"></output></label>
+        <input id="R" type="range" min="0" max="25" step="0.25" value="8">
+      </div>
+      <div class="ctrl">
+        <label for="N"><span>Horizon</span> <output id="oN"></output></label>
+        <input id="N" type="range" min="1" max="60" step="1" value="30">
+      </div>
+      <div class="ctrl">
+        <label id="mLab"><span>Compounding per year <i>m</i></span> <output id="oMf"></output></label>
+        <div class="seg" role="group" aria-labelledby="mLab" id="seg">
+          <button data-m="1" aria-pressed="false">1</button>
+          <button data-m="2" aria-pressed="false">2</button>
+          <button data-m="4" aria-pressed="true">4</button>
+          <button data-m="12" aria-pressed="false">12</button>
+          <button data-m="365" aria-pressed="false">365</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 2 : TAYLOR ==================== -->
+  <section class="panel" id="taylor" role="tabpanel" aria-labelledby="tab-taylor" hidden>
+    <div class="readout">
+      <div class="res" style="--c:var(--navy)">
+        <div class="name"><span class="key"></span>Exact value</div>
+        <div class="val" id="tE"></div>
+      </div>
+      <div class="res" style="--c:var(--sky)">
+        <div class="name"><span class="key"></span>Taylor approximation</div>
+        <div class="val" id="tA"></div>
+      </div>
+      <div class="res" style="--c:var(--sky)">
+        <div class="name"><span class="key area"></span>Error</div>
+        <div class="val" id="tErr"></div>
+      </div>
+      <div class="gain">
+        <p>The approximation is off by</p>
+        <strong id="tRel"></strong>
+        <p id="tRelp"></p>
+      </div>
+    </div>
+
+    <div class="stage" id="stageT">
+      <svg id="svgT" viewBox="0 0 1000 470" role="img" aria-label="Natural logarithm of one plus x and its Taylor polynomial around zero"></svg>
+      <div class="tip" id="tipT" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="controls two">
+      <div class="ctrl">
+        <label for="K"><span>Order of the expansion</span> <output id="oK"></output></label>
+        <input id="K" type="range" min="1" max="10" step="1" value="1">
+      </div>
+      <div class="ctrl">
+        <label for="X"><span>Point <i>x</i></span> <output id="oX"></output></label>
+        <input id="X" type="range" min="-0.9" max="2" step="0.01" value="0.25">
+      </div>
+    </div>
+  </section>
 
 </main>
 
@@ -160,132 +228,252 @@
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const svg = $('svg'), tip = $('tip'), stage = $('stage');
   const NS = 'http://www.w3.org/2000/svg';
-  let W = 1000, H = 470, L = 70, R = 24; const T = 20, B = 44;
-  const C = { gray:'#A3ACBD', sky:'#688CCF', navy:'#2C4778', soft:'#5D6B86', line:'#E6EBF3' };
-  let m = 4, first = true, st = {};
+  const C = { gray:'#A3ACBD', sky:'#688CCF', navy:'#2C4778', soft:'#5D6B86', line:'#E6EBF3', axis:'#C3CCDB' };
+  const T = 20, B = 44;
 
+  /* ---------- shared helpers ---------- */
   const money = v => '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
   const compact = v => v >= 1e6 ? '$' + (v/1e6).toFixed(v >= 1e7 ? 0 : 1) + 'M'
                      : v >= 1e3 ? '$' + (v/1e3).toFixed(v >= 1e4 ? 0 : 1).replace(/\.0$/,'') + 'k'
                      : '$' + Math.round(v);
   const nice = (range, n) => { const r = range/n, p = 10 ** Math.floor(Math.log10(r)), f = r/p;
                                return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p; };
-  const el = (tag, a, parent) => { const e = document.createElementNS(NS, tag);
-                                   for (const k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; };
-
-  const fS = (M0, r, t) => M0 * (1 + r*t);
-  const fD = (M0, r, t) => M0 * Math.pow(1 + r/m, m*t);
-  const fC = (M0, r, t) => M0 * Math.exp(r*t);
-
+  const el = (svg, tag, a, parent) => { const e = document.createElementNS(NS, tag);
+                                        for (const k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; };
+  const d = p => p.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('');
+  const back = p => p.slice().reverse().map(q => 'L' + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('');
   function setFill(input){
     const p = (input.value - input.min) / (input.max - input.min) * 100;
     input.style.setProperty('--p', p + '%');
   }
-
-  function render(){
+  function frame(stage, svg){
     const narrow = stage.clientWidth < 640;
-    W = narrow ? 520 : 1000; H = narrow ? 460 : 470; L = narrow ? 52 : 70; R = narrow ? 14 : 24;
+    const W = narrow ? 520 : 1000, H = narrow ? 460 : 470, L = narrow ? 52 : 70, R = narrow ? 14 : 24;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    const M0 = +$('M').value, r = +$('R').value / 100, N = +$('N').value;
-    ['M','R','N'].forEach(id => setFill($(id)));
-    $('oM').textContent = '$' + M0.toLocaleString('en-US');
-    $('oR').textContent = (r*100).toFixed(2).replace(/\.?0+$/,'') + '%';
-    $('oN').textContent = N + (N === 1 ? ' year' : ' years');
-    $('oMf').textContent = m;
-
-    const top = Math.max(fC(M0, r, N), fS(M0, r, N), M0 * 1.1);
-    const step = nice(top, 5), yMax = Math.ceil(top / step) * step;
-    const x = t => L + t / N * (W - L - R);
-    const y = v => H - B - v / yMax * (H - T - B);
-    st = {M0, r, N, x, y};
-
-    svg.querySelectorAll(':scope > :not(desc)').forEach(n => n.remove());
-    const defs = el('defs', {});
-    const g = el('linearGradient', {id:'bonus', x1:0, y1:0, x2:0, y2:1}, defs);
-    el('stop', {offset:'0%', 'stop-color':C.sky, 'stop-opacity':.32}, g);
-    el('stop', {offset:'100%', 'stop-color':C.sky, 'stop-opacity':.04}, g);
-
-    // grid
-    const ax = el('g', {class:'axis'});
-    for (let v = 0; v <= yMax + 1e-9; v += step){
-      el('line', {x1:L, x2:W-R, y1:y(v), y2:y(v), stroke:C.line}, ax);
-      el('text', {x:L-12, y:y(v)+4, 'text-anchor':'end'}, ax).textContent = compact(v);
-    }
-    const xs = nice(N, narrow ? 4 : 6);
-    for (let t = 0; t <= N + 1e-9; t += xs)
-      el('text', {x:x(t), y:H-B+22, 'text-anchor':'middle'}, ax).textContent = t === 0 ? 'Today' : t + 'y';
-
-    // curves
-    const pts = (f, n = 300) => Array.from({length:n+1}, (_, i) => { const t = N*i/n; return [x(t), y(f(M0, r, t))]; });
-    const d = p => p.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('');
-    const pS = pts(fS), pC = pts(fC), pD = pts(fD);
-
-    // shaded "interest on interest" area between simple and discrete
-    el('path', {d: d(pD) + pS.slice().reverse().map(q => 'L' + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('') + 'Z',
-                fill:'url(#bonus)', class: first ? 'fade' : ''});
-
-    const curve = (p, color, w, dash) => {
-      const e = el('path', {d:d(p), fill:'none', stroke:color, 'stroke-width':w, 'stroke-linecap':'round', 'stroke-linejoin':'round'});
-      if (dash) e.setAttribute('stroke-dasharray', dash);
-      else if (first){ const len = e.getTotalLength(); e.style.setProperty('--len', len); e.classList.add('draw'); }
-      return e;
-    };
-    curve(pS, C.gray, 2.4);
-    curve(pD, C.sky, 3.2);
-    const cc = curve(pC, C.navy, 2, '2 6');
-    if (first) cc.classList.add('fade');
-
-    // end dots
-    [[fS(M0, r, N), C.gray], [fD(M0, r, N), C.sky], [fC(M0, r, N), C.navy]].forEach(([v, c]) =>
-      el('circle', {cx:x(N), cy:y(v), r:4, fill:'#fff', stroke:c, 'stroke-width':2, class: first ? 'fade' : ''}));
-
-    // hover
-    st.cursor = el('line', {y1:T, y2:H-B, stroke:C.navy, 'stroke-opacity':.2, 'stroke-width':1, visibility:'hidden'});
-    st.dots = [C.gray, C.sky, C.navy].map(c => el('circle', {r:5, fill:'#fff', stroke:c, 'stroke-width':2.5, visibility:'hidden'}));
-    const hit = el('rect', {x:L, y:T, width:W-L-R, height:H-T-B, fill:'transparent'});
-    hit.addEventListener('pointermove', hover);
-    hit.addEventListener('pointerdown', hover);
-    hit.addEventListener('pointerleave', hide);
-
-    // readout
-    const s = fS(M0, r, N), dd = fD(M0, r, N), c = fC(M0, r, N);
-    $('vS').textContent = money(s); $('vD').textContent = money(dd); $('vC').textContent = money(c);
-    $('vG').textContent = '+' + money(dd - s);
-    $('vGp').textContent = s > M0 ? (((dd - s) / (s - M0)) * 100).toFixed(0) + '% more interest than simple' : 'at this rate';
-    first = false;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    return {narrow, W, H, L, R};
   }
-
-  function hover(e){
-    const {M0, r, N, x, y} = st;
-    const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
-    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
-    const t = Math.max(0, Math.min(N, (p.x - L) / (W - L - R) * N));
-    const v = [fS(M0, r, t), fD(M0, r, t), fC(M0, r, t)];
-    st.cursor.setAttribute('x1', x(t)); st.cursor.setAttribute('x2', x(t)); st.cursor.setAttribute('visibility', 'visible');
-    st.dots.forEach((d, i) => { d.setAttribute('cx', x(t)); d.setAttribute('cy', y(v[i])); d.setAttribute('visibility', 'visible'); });
-    const yr = t < 0.05 ? 'Today' : 'After ' + t.toFixed(1) + ' years';
-    tip.innerHTML = '<div class="yr">' + yr + '</div>' +
-      [['Simple', C.gray, v[0]], ['Discrete', C.sky, v[1]], ['Continuous', C.navy, v[2]]]
-        .map(q => '<div class="row" style="--c:' + q[1] + '"><span>' + q[0] + '</span><span>' + money(q[2]) + '</span></div>').join('');
+  function bonusGradient(svg, id){
+    const defs = el(svg, 'defs', {});
+    const g = el(svg, 'linearGradient', {id, x1:0, y1:0, x2:0, y2:1}, defs);
+    el(svg, 'stop', {offset:'0%', 'stop-color':C.sky, 'stop-opacity':.32}, g);
+    el(svg, 'stop', {offset:'100%', 'stop-color':C.sky, 'stop-opacity':.06}, g);
+    return defs;
+  }
+  function placeTip(tip, stage, e, html){
+    tip.innerHTML = html;
     const rb = stage.getBoundingClientRect();
     let lx = e.clientX - rb.left + 18, ly = e.clientY - rb.top - 30;
     if (lx + 200 > rb.width) lx = e.clientX - rb.left - 218;
     tip.style.left = Math.max(0, lx) + 'px'; tip.style.top = Math.max(0, ly) + 'px'; tip.classList.add('on');
   }
-  function hide(){
-    tip.classList.remove('on'); st.cursor.setAttribute('visibility', 'hidden');
-    st.dots.forEach(d => d.setAttribute('visibility', 'hidden'));
+  const row = (name, color, value) =>
+    '<div class="row" style="--c:' + color + '"><span>' + name + '</span><span>' + value + '</span></div>';
+  function svgX(svg, e){
+    const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse()).x;
   }
 
-  ['M','R','N'].forEach(id => $(id).addEventListener('input', render));
-  document.querySelectorAll('#seg button').forEach(b => b.addEventListener('click', () => {
-    document.querySelectorAll('#seg button').forEach(x => x.setAttribute('aria-pressed', 'false'));
-    b.setAttribute('aria-pressed', 'true'); m = +b.dataset.m; render();
-  }));
-  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 120); });
-  render();
+  /* =================== TAB 1 : COMPOUNDING =================== */
+  const compounding = (function(){
+    const svg = $('svgC'), tip = $('tipC'), stage = $('stageC');
+    let m = 4, first = true, st = {};
+    const fS = (M0, r, t) => M0 * (1 + r*t);
+    const fD = (M0, r, t) => M0 * Math.pow(1 + r/m, m*t);
+    const fC = (M0, r, t) => M0 * Math.exp(r*t);
+
+    function render(){
+      const {narrow, W, H, L, R} = frame(stage, svg);
+      const M0 = +$('M').value, r = +$('R').value / 100, N = +$('N').value;
+      ['M','R','N'].forEach(id => setFill($(id)));
+      $('oM').textContent = '$' + M0.toLocaleString('en-US');
+      $('oR').textContent = (r*100).toFixed(2).replace(/\.?0+$/,'') + '%';
+      $('oN').textContent = N + (N === 1 ? ' year' : ' years');
+      $('oMf').textContent = m;
+
+      const top = Math.max(fC(M0, r, N), fS(M0, r, N), M0 * 1.1);
+      const step = nice(top, 5), yMax = Math.ceil(top / step) * step;
+      const x = t => L + t / N * (W - L - R);
+      const y = v => H - B - v / yMax * (H - T - B);
+      st = {M0, r, N, x, y, W, L, R, H};
+
+      bonusGradient(svg, 'bonusC');
+      const ax = el(svg, 'g', {class:'axis'});
+      for (let v = 0; v <= yMax + 1e-9; v += step){
+        el(svg, 'line', {x1:L, x2:W-R, y1:y(v), y2:y(v), stroke:C.line}, ax);
+        el(svg, 'text', {x:L-12, y:y(v)+4, 'text-anchor':'end'}, ax).textContent = compact(v);
+      }
+      const xs = nice(N, narrow ? 4 : 6);
+      for (let t = 0; t <= N + 1e-9; t += xs)
+        el(svg, 'text', {x:x(t), y:H-B+22, 'text-anchor':'middle'}, ax).textContent = t === 0 ? 'Today' : t + 'y';
+
+      const pts = f => Array.from({length:301}, (_, i) => { const t = N*i/300; return [x(t), y(f(M0, r, t))]; });
+      const pS = pts(fS), pD = pts(fD), pC = pts(fC);
+      el(svg, 'path', {d: d(pD) + back(pS) + 'Z', fill:'url(#bonusC)', class: first ? 'fade' : ''});
+
+      const curve = (p, color, w, dash) => {
+        const e = el(svg, 'path', {d:d(p), fill:'none', stroke:color, 'stroke-width':w, 'stroke-linecap':'round', 'stroke-linejoin':'round'});
+        if (dash){ e.setAttribute('stroke-dasharray', dash); if (first) e.classList.add('fade'); }
+        else if (first){ e.style.setProperty('--len', e.getTotalLength()); e.classList.add('draw'); }
+      };
+      curve(pS, C.gray, 2.4);
+      curve(pD, C.sky, 3.2);
+      curve(pC, C.navy, 2, '2 6');
+      [[fS(M0, r, N), C.gray], [fD(M0, r, N), C.sky], [fC(M0, r, N), C.navy]].forEach(([v, c]) =>
+        el(svg, 'circle', {cx:x(N), cy:y(v), r:4, fill:'#fff', stroke:c, 'stroke-width':2, class: first ? 'fade' : ''}));
+
+      st.cursor = el(svg, 'line', {y1:T, y2:H-B, stroke:C.navy, 'stroke-opacity':.2, visibility:'hidden'});
+      st.dots = [C.gray, C.sky, C.navy].map(c => el(svg, 'circle', {r:5, fill:'#fff', stroke:c, 'stroke-width':2.5, visibility:'hidden'}));
+      const hit = el(svg, 'rect', {x:L, y:T, width:W-L-R, height:H-T-B, fill:'transparent'});
+      hit.addEventListener('pointermove', hover); hit.addEventListener('pointerdown', hover); hit.addEventListener('pointerleave', hide);
+
+      const s = fS(M0, r, N), dd = fD(M0, r, N), c = fC(M0, r, N);
+      $('vS').textContent = money(s); $('vD').textContent = money(dd); $('vC').textContent = money(c);
+      $('vG').textContent = '+' + money(dd - s);
+      $('vGp').textContent = s > M0 ? (((dd - s) / (s - M0)) * 100).toFixed(0) + '% more interest than simple' : 'at this rate';
+      first = false;
+    }
+    function hover(e){
+      const {M0, r, N, x, y, W, L, R} = st;
+      const t = Math.max(0, Math.min(N, (svgX(svg, e) - L) / (W - L - R) * N));
+      const v = [fS(M0, r, t), fD(M0, r, t), fC(M0, r, t)];
+      st.cursor.setAttribute('x1', x(t)); st.cursor.setAttribute('x2', x(t)); st.cursor.setAttribute('visibility', 'visible');
+      st.dots.forEach((dt, i) => { dt.setAttribute('cx', x(t)); dt.setAttribute('cy', y(v[i])); dt.setAttribute('visibility', 'visible'); });
+      placeTip(tip, stage, e, '<div class="yr">' + (t < 0.05 ? 'Today' : 'After ' + t.toFixed(1) + ' years') + '</div>' +
+        row('Simple', C.gray, money(v[0])) + row('Discrete', C.sky, money(v[1])) + row('Continuous', C.navy, money(v[2])));
+    }
+    function hide(){
+      tip.classList.remove('on'); st.cursor.setAttribute('visibility', 'hidden');
+      st.dots.forEach(dt => dt.setAttribute('visibility', 'hidden'));
+    }
+    ['M','R','N'].forEach(id => $(id).addEventListener('input', render));
+    document.querySelectorAll('#seg button').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('#seg button').forEach(x => x.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true'); m = +b.dataset.m; render();
+    }));
+    return {render};
+  })();
+
+  /* =================== TAB 2 : TAYLOR =================== */
+  const taylor = (function(){
+    const svg = $('svgT'), tip = $('tipT'), stage = $('stageT');
+    const X0 = -0.95, X1 = 2, Y0 = -3, Y1 = 1.6;
+    let first = true, st = {};
+    const exact = x => Math.log(1 + x);
+    const approx = (x, n) => { let s = 0, p = 1; for (let k = 1; k <= n; k++){ p *= x; s += (k % 2 ? 1 : -1) * p / k; } return s; };
+    const fmt = v => (v >= 0 ? '' : '−') + Math.abs(v).toFixed(4);
+    const clampY = v => Math.max(Y0 - 1, Math.min(Y1 + 1, v));
+
+    function render(){
+      const {narrow, W, H, L, R} = frame(stage, svg);
+      const n = +$('K').value, x0 = +$('X').value;
+      ['K','X'].forEach(id => setFill($(id)));
+      $('oK').textContent = n;
+      $('oX').textContent = x0.toFixed(2);
+
+      const x = v => L + (v - X0) / (X1 - X0) * (W - L - R);
+      const y = v => H - B - (v - Y0) / (Y1 - Y0) * (H - T - B);
+      st = {n, x, y, W, L, R, H};
+
+      const defs = bonusGradient(svg, 'bonusT');
+      const cp = el(svg, 'clipPath', {id:'plotT'}, defs);
+      el(svg, 'rect', {x:L, y:T, width:W-L-R, height:H-T-B}, cp);
+
+      const ax = el(svg, 'g', {class:'axis'});
+      for (let v = -3; v <= 1.5 + 1e-9; v += 0.5){
+        el(svg, 'line', {x1:L, x2:W-R, y1:y(v), y2:y(v), stroke: Math.abs(v) < 1e-9 ? C.axis : C.line}, ax);
+        if (Math.abs(v % 1) < 1e-9 || !narrow)
+          el(svg, 'text', {x:L-12, y:y(v)+4, 'text-anchor':'end'}, ax).textContent = v.toFixed(1).replace('-', '−');
+      }
+      for (let v = -0.5; v <= 2 + 1e-9; v += 0.5){
+        el(svg, 'line', {x1:x(v), x2:x(v), y1:T, y2:H-B, stroke: Math.abs(v) < 1e-9 ? C.axis : C.line}, ax);
+        el(svg, 'text', {x:x(v), y:H-B+22, 'text-anchor':'middle'}, ax).textContent = v.toFixed(1).replace('-', '−');
+      }
+
+      const pts = f => Array.from({length:401}, (_, i) => { const v = X0 + (X1 - X0) * i / 400; return [x(v), y(clampY(f(v)))]; });
+      const pE = pts(exact), pA = pts(v => approx(v, n));
+      const g = el(svg, 'g', {'clip-path':'url(#plotT)'});
+      el(svg, 'path', {d: d(pA) + back(pE) + 'Z', fill:'url(#bonusT)', class: first ? 'fade' : ''}, g);
+      const curve = (p, color, w) => {
+        const e = el(svg, 'path', {d:d(p), fill:'none', stroke:color, 'stroke-width':w, 'stroke-linecap':'round', 'stroke-linejoin':'round'}, g);
+        if (first){ e.style.setProperty('--len', e.getTotalLength()); e.classList.add('draw'); }
+      };
+      curve(pE, C.navy, 2.6);
+      curve(pA, C.sky, 3);
+
+      // the chosen point
+      const ve = exact(x0), va = approx(x0, n);
+      el(svg, 'line', {x1:x(x0), x2:x(x0), y1:y(clampY(ve)), y2:y(clampY(va)), stroke:C.sky, 'stroke-width':2,
+                       'stroke-dasharray':'3 4', 'clip-path':'url(#plotT)'});
+      [[ve, C.navy], [va, C.sky]].forEach(([v, c]) => {
+        if (v >= Y0 && v <= Y1) el(svg, 'circle', {cx:x(x0), cy:y(v), r:5, fill:'#fff', stroke:c, 'stroke-width':2.5});
+      });
+
+      st.cursor = el(svg, 'line', {y1:T, y2:H-B, stroke:C.navy, 'stroke-opacity':.2, visibility:'hidden'});
+      st.dots = [C.navy, C.sky].map(c => el(svg, 'circle', {r:4, fill:'#fff', stroke:c, 'stroke-width':2, visibility:'hidden'}));
+      const hit = el(svg, 'rect', {x:L, y:T, width:W-L-R, height:H-T-B, fill:'transparent'});
+      hit.addEventListener('pointermove', hover); hit.addEventListener('pointerdown', hover); hit.addEventListener('pointerleave', hide);
+
+      const err = Math.abs(va - ve);
+      $('tE').textContent = fmt(ve);
+      $('tA').textContent = fmt(va);
+      $('tErr').textContent = err < 5e-5 ? '< 0.0001' : err.toFixed(4);
+      const rel = Math.abs(ve) > 1e-9 ? err / Math.abs(ve) * 100 : 0;
+      $('tRel').textContent = rel < 0.01 ? 'less than 0.01%' : rel >= 1000 ? 'more than 1000%' : rel.toFixed(rel < 1 ? 2 : 1) + '%';
+      $('tRelp').textContent = x0 > 1 ? 'beyond x = 1, adding terms makes it worse'
+                             : rel < 1 ? 'the curves are almost one'
+                             : n < 10 ? 'add terms to get closer'
+                             : 'move x towards 0 to get closer';
+      first = false;
+    }
+    function hover(e){
+      const {n, x, y, W, L, R} = st;
+      const v = X0 + Math.max(0, Math.min(1, (svgX(svg, e) - L) / (W - L - R))) * (X1 - X0);
+      const ve = exact(v), va = approx(v, n);
+      st.cursor.setAttribute('x1', x(v)); st.cursor.setAttribute('x2', x(v)); st.cursor.setAttribute('visibility', 'visible');
+      [ve, va].forEach((val, i) => {
+        const vis = val >= Y0 && val <= Y1;
+        st.dots[i].setAttribute('cx', x(v)); st.dots[i].setAttribute('cy', y(clampY(val)));
+        st.dots[i].setAttribute('visibility', vis ? 'visible' : 'hidden');
+      });
+      placeTip(tip, stage, e, '<div class="yr">x = ' + v.toFixed(2) + '</div>' +
+        row('Exact', C.navy, fmt(ve)) + row('Approximation', C.sky, fmt(va)));
+    }
+    function hide(){
+      tip.classList.remove('on'); st.cursor.setAttribute('visibility', 'hidden');
+      st.dots.forEach(dt => dt.setAttribute('visibility', 'hidden'));
+    }
+    ['K','X'].forEach(id => $(id).addEventListener('input', render));
+    return {render};
+  })();
+
+  /* =================== TABS =================== */
+  const panels = {compounding, taylor};
+  const tabs = [...document.querySelectorAll('.tab')];
+  function show(name, push){
+    if (!panels[name]) name = 'compounding';
+    tabs.forEach(t => {
+      const on = t.dataset.tab === name;
+      t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+      $(t.dataset.tab).hidden = !on;
+    });
+    panels[name].render();
+    if (push) history.replaceState(null, '', '#' + name);
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => show(t.dataset.tab, true));
+    t.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      next.focus(); show(next.dataset.tab, true);
+    });
+  });
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => {
+    const cur = tabs.find(t => t.getAttribute('aria-selected') === 'true'); if (cur) panels[cur.dataset.tab].render();
+  }, 120); });
+  show(location.hash.slice(1));
 })();
 </script>
 </body>
