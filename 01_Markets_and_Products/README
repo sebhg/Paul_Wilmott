@@ -1,17 +1,17 @@
-# Markets & Products
+# Paul Wilmott
 
-This chapter introduces the fundamental financial instruments and market concepts used throughout quantitative finance.
+![LaTeX](https://img.shields.io/badge/LaTeX-008080?style=flat-square&logo=latex&logoColor=white)
+![Overleaf](https://img.shields.io/badge/Overleaf-47A141?style=flat-square&logo=overleaf&logoColor=white)
+
+Quantitative finance concepts, demonstrated and illustrated by charts.
+Each chapter is summarized in a single PDF written in LaTeX.
+
+<img src="assets/progress.svg" alt="Progress" width="360">
+
+&nbsp;
 
 ## Contents
 
-### 1. Interest Rates
-
-Introduction to interest rates, compounding and discounting.
-
-### 2. Equities
-
-Introduction to stocks, dividends and equity returns.
-
-### 3. Forwards & Futures
-
-Introduction to forward/futures contracts and no-arbitrage pricing.
+| | Chapter | Topics | |
+|:--|:--|:--|--:|
+| **01** | **Markets & Products** | The Price of Time | [PDF](01_Markets_and_Products/01_Markets_and_Products.pdf) |
