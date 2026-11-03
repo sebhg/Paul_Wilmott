@@ -104,6 +104,17 @@
   .gain{background:var(--mist);border-radius:10px;padding:14px 16px;align-self:start}
   .gain p{margin:0;font-size:14px;color:var(--soft)}
   .gain strong{display:block;font:600 22px/1.3 var(--sans);color:var(--navy);font-variant-numeric:tabular-nums}
+  /* ---------- Formula line (Taylor tab) ---------- */
+  .fn{margin:30px 0 0;padding:18px 20px;background:#fff;border:1px solid var(--line);border-radius:10px;
+      display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font:400 22px/1.4 var(--serif)}
+  .fn .ex{color:var(--navy);font-weight:600}
+  .fn .ap{color:var(--sky);display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+  .fn .op{color:var(--soft);padding:0 2px}
+  .fn i{font-style:italic}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.82em;line-height:1.15}
+  .frac>span:last-child{border-top:1.5px solid currentColor;padding:0 3px;min-width:100%;text-align:center}
+  .fn .note{flex-basis:100%;font:400 14px var(--sans);color:var(--soft);margin-top:2px}
+  @media (max-width:480px){.fn{font-size:18px;padding:14px}}
   footer{color:var(--soft);font-size:13px;padding:40px 20px 40px}
 </style>
 </head>
@@ -184,7 +195,8 @@
 
   <!-- ==================== TAB 2 : TAYLOR ==================== -->
   <section class="panel" id="taylor" role="tabpanel" aria-labelledby="tab-taylor" hidden>
-    <div class="readout">
+    <div class="fn" id="fn" aria-live="polite"></div>
+    <div class="readout" style="margin-top:24px">
       <div class="res" style="--c:var(--navy)">
         <div class="name"><span class="key"></span>Exact value</div>
         <div class="val" id="tE"></div>
@@ -415,10 +427,20 @@
       const hit = el(svg, 'rect', {x:L, y:T, width:W-L-R, height:H-T-B, fill:'transparent'});
       hit.addEventListener('pointermove', hover); hit.addEventListener('pointerdown', hover); hit.addEventListener('pointerleave', hide);
 
+      // formula line, colour-coded like the curves
+      const xs = k => k === 1 ? '<i>x</i>' : '<i>x</i><sup>' + k + '</sup>';
+      let poly = '';
+      for (let k = 1; k <= n; k++){
+        const term = k === 1 ? xs(1) : '<span class="frac"><span>' + xs(k) + '</span><span>' + k + '</span></span>';
+        poly += (k === 1 ? '' : '<span class="op">' + (k % 2 ? '+' : '−') + '</span>') + term;
+      }
+      $('fn').innerHTML = '<span class="ex">ln(1 + <i>x</i>)</span><span class="op">≈</span><span class="ap">' + poly + '</span>' +
+        '<span class="note">Taylor expansion of ln(1 + x) around 0, order ' + n + '</span>';
+
       const err = Math.abs(va - ve);
       $('tE').textContent = fmt(ve);
       $('tA').textContent = fmt(va);
-      $('tErr').textContent = err < 5e-5 ? '< 0.0001' : err.toFixed(4);
+      $('tErr').textContent = err < 5e-6 ? '< 0.00001' : err < 1e-3 ? err.toFixed(5) : err.toFixed(4);
       const rel = Math.abs(ve) > 1e-9 ? err / Math.abs(ve) * 100 : 0;
       $('tRel').textContent = rel < 0.01 ? 'less than 0.01%' : rel >= 1000 ? 'more than 1000%' : rel.toFixed(rel < 1 ? 2 : 1) + '%';
       $('tRelp').textContent = x0 > 1 ? 'beyond x = 1, adding terms makes it worse'
