@@ -3,238 +3,289 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Price of Time — Interactive</title>
+<title>The Price of Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
 <style>
   :root{
-    --sky:#688CCF; --navy:#2C4778; --ink:#1F2933; --mute:#6B7785;
-    --paper:#F6F8FA; --line:#E3E8EF; --gray:#9AA3B2;
+    --sky:#688CCF; --navy:#2C4778; --ink:#18233D; --soft:#5D6B86;
+    --mist:#EEF2F9; --line:#DCE3EF; --gray:#A3ACBD; --paper:#FBFCFE;
+    --serif:"Literata", Georgia, serif;
+    --sans:"IBM Plex Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:#fff;color:var(--ink);
-       font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
-  header{background:linear-gradient(90deg,var(--sky),var(--navy));color:#fff;
-         padding:28px 16px 30px;position:relative;overflow:hidden}
-  header::after{content:"";position:absolute;right:-80px;top:-120px;width:320px;height:320px;
-         border-radius:50%;background:rgba(255,255,255,.06)}
-  .wrap{max-width:980px;margin:0 auto;padding:0 16px}
-  header .wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
-  .num{font-size:52px;font-weight:700;line-height:1;opacity:.92}
-  .kicker{font-size:11px;font-weight:700;letter-spacing:.08em}
-  h1{margin:2px 0 2px;font-size:26px;line-height:1.2}
-  .sub{font-size:14px;opacity:.9}
-  .vol{margin-left:auto;text-align:right;font-size:12px}
-  .vol span{display:inline-block;border:1px solid #fff;border-radius:4px;padding:2px 8px;
-            font-weight:700;font-size:11px;letter-spacing:.06em;margin-bottom:6px}
-  main{padding:28px 0 40px}
-  .grid{display:grid;grid-template-columns:280px 1fr;gap:24px}
-  @media (max-width:760px){.grid{grid-template-columns:1fr}.vol{margin-left:0;text-align:left}}
-  .card{background:var(--paper);border-radius:10px;padding:16px}
-  .ctrl{margin-bottom:18px}
-  .ctrl:last-child{margin-bottom:0}
-  .ctrl label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px}
-  .ctrl label b{color:var(--navy);font-variant-numeric:tabular-nums}
-  input[type=range]{width:100%;accent-color:var(--navy)}
-  .seg{display:flex;flex-wrap:wrap;gap:6px}
-  .seg button{flex:1 1 auto;border:1px solid var(--line);background:#fff;color:var(--ink);
-              border-radius:6px;padding:5px 6px;font:600 12px inherit;cursor:pointer}
-  .seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
-  .chart{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;position:relative}
-  svg{display:block;width:100%;height:auto}
-  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;padding:6px 8px 2px}
-  .legend i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
-  .tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;
-       border-radius:6px;padding:6px 8px;opacity:0;transition:opacity .1s;white-space:nowrap}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
-  @media (max-width:560px){.stats{grid-template-columns:1fr}}
-  .stat{background:var(--paper);border-radius:10px;padding:12px 14px;border-left:3px solid var(--c)}
-  .stat .t{font-size:12px;color:var(--mute);font-weight:600}
-  .stat .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
-  .stat .f{font-size:12px;color:var(--mute);font-family:Georgia,serif;font-style:italic}
-  footer{color:var(--mute);font-size:12px;text-align:center;padding:0 16px 28px}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans)}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+  /* ---------- Header : same band as the PDF ---------- */
+  header{background:linear-gradient(100deg,var(--sky) 0%,var(--navy) 100%);color:#fff;position:relative;overflow:hidden}
+  header::before,header::after{content:"";position:absolute;border-radius:50%;background:#fff;pointer-events:none}
+  header::before{width:420px;height:420px;right:-120px;top:-210px;opacity:.06}
+  header::after{width:220px;height:220px;right:60px;bottom:-150px;opacity:.05}
+  .band{display:flex;align-items:center;gap:24px;padding:34px 20px 36px;position:relative;z-index:1;flex-wrap:wrap}
+  .chap{font:600 64px/0.9 var(--sans);letter-spacing:-.02em;opacity:.92}
+  .titles h1{font:600 clamp(26px,4vw,34px)/1.15 var(--serif);margin:0 0 4px}
+  .titles p{margin:0;font-size:15px;opacity:.88;max-width:52ch}
+  .vol{margin-left:auto;text-align:right;font-size:13px;line-height:1.4;opacity:.95}
+  .vol b{display:inline-block;border:1px solid rgba(255,255,255,.9);border-radius:4px;padding:2px 9px;margin-bottom:6px;font-weight:600}
+  @media (max-width:640px){.vol{margin-left:0;text-align:left}.chap{font-size:48px}}
+
+  /* ---------- Chart ---------- */
+  .stage{margin-top:18px;position:relative}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .axis text{font:12px var(--sans);fill:var(--soft);font-variant-numeric:tabular-nums}
+  .tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--line);border-radius:8px;
+       box-shadow:0 8px 24px rgba(24,35,61,.12);padding:10px 12px;font-size:13px;line-height:1.5;
+       opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;min-width:180px}
+  .tip.on{opacity:1;transform:none}
+  .tip .yr{font:600 13px var(--sans);margin-bottom:4px}
+  .tip .row{display:flex;justify-content:space-between;gap:16px;font-variant-numeric:tabular-nums}
+  .tip .row span:first-child{color:var(--soft)}
+  .tip .row span:first-child::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;
+       background:var(--c);margin-right:7px;vertical-align:1px}
+  .draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.4s cubic-bezier(.3,.7,.2,1) forwards}
+  .fade{opacity:0;animation:fade .8s ease-out .9s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes fade{to{opacity:1}}
+  @media (prefers-reduced-motion:reduce){.draw{animation:none;stroke-dasharray:none}.fade{animation:none;opacity:1}}
+
+  /* ---------- Controls ---------- */
+  .controls{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin:18px 0 0;padding:22px 0;
+            border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  @media (max-width:820px){.controls{grid-template-columns:1fr 1fr}}
+  @media (max-width:480px){.controls{grid-template-columns:1fr}}
+  .ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--soft);margin-bottom:10px}
+  .ctrl output{font:600 18px var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
+  .ctrl i{font-family:var(--serif)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;margin:0;cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;
+       background:linear-gradient(90deg,var(--navy) var(--p),var(--line) var(--p))}
+  input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--line)}
+  input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--navy)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;
+       background:#fff;border:2px solid var(--navy);box-shadow:0 1px 3px rgba(24,35,61,.25);transition:transform .1s}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--navy)}
+  input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
+  input:focus-visible,button:focus-visible{outline:2px solid var(--sky);outline-offset:3px;border-radius:4px}
+  .seg{display:grid;grid-template-columns:repeat(5,1fr);background:var(--mist);border-radius:8px;padding:3px}
+  .seg button{border:0;background:transparent;color:var(--soft);font:500 13px var(--sans);padding:5px 0;border-radius:6px;cursor:pointer}
+  .seg button[aria-pressed=true]{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 3px rgba(24,35,61,.15)}
+
+  /* ---------- Readout ---------- */
+  .readout{display:grid;grid-template-columns:repeat(3,1fr) 1.15fr;gap:0;margin:30px 0 0;align-items:center}
+  @media (max-width:820px){.readout{grid-template-columns:1fr 1fr;row-gap:22px}}
+  @media (max-width:480px){.readout{grid-template-columns:1fr}}
+  .res{padding:0 20px 0 0;align-self:start}
+  .key{display:inline-block;width:22px;height:3px;border-radius:2px;background:var(--c);vertical-align:middle;margin-right:9px}
+  .key.dash{background:repeating-linear-gradient(90deg,var(--c) 0 4px,transparent 4px 8px)}
+  .res .name{font-size:14px;color:var(--soft)}
+  .res .val{font:600 26px/1.25 var(--sans);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .gain{background:var(--mist);border-radius:10px;padding:14px 16px;align-self:start}
+  .gain p{margin:0;font-size:14px;color:var(--soft)}
+  .gain strong{display:block;font:600 22px/1.3 var(--sans);color:var(--navy);font-variant-numeric:tabular-nums}
+  footer{color:var(--soft);font-size:13px;padding:40px 20px 40px}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="wrap">
-    <div class="num">01</div>
-    <div>
-      <div class="kicker">CHAPTER 01 · INTERACTIVE</div>
+  <div class="wrap band">
+    <div class="chap" aria-hidden="true">01</div>
+    <div class="titles">
       <h1>The Price of Time</h1>
-      <div class="sub">Simple, discrete and continuous compounding</div>
+      <p>Watch an investment grow under simple, discrete and continuous compounding.</p>
     </div>
-    <div class="vol"><span>VOLUME I</span><br>Paul Wilmott on<br>Quantitative Finance</div>
+    <div class="vol"><b>Volume I</b><br>Paul Wilmott on<br>Quantitative Finance</div>
   </div>
 </header>
 
 <main class="wrap">
-  <div class="grid">
-    <aside class="card">
-      <div class="ctrl">
-        <label>Initial investment <b id="vM">$100</b></label>
-        <input id="M" type="range" min="1" max="1000" step="1" value="100">
-      </div>
-      <div class="ctrl">
-        <label>Annual rate r <b id="vR">5.0%</b></label>
-        <input id="R" type="range" min="0" max="30" step="0.5" value="5">
-      </div>
-      <div class="ctrl">
-        <label>Horizon <b id="vN">30 years</b></label>
-        <input id="N" type="range" min="1" max="60" step="1" value="30">
-      </div>
-      <div class="ctrl">
-        <label>Compounding per year m <b id="vMf">1</b></label>
-        <div class="seg" id="seg">
-          <button data-m="1" class="on">1</button>
-          <button data-m="2">2</button>
-          <button data-m="4">4</button>
-          <button data-m="12">12</button>
-          <button data-m="365">365</button>
-        </div>
-      </div>
-    </aside>
-
-    <section>
-      <div class="chart" id="chartBox">
-        <svg id="svg" viewBox="0 0 640 380" role="img" aria-label="Growth of an investment under three compounding conventions"></svg>
-        <div class="legend">
-          <span><i style="background:var(--gray)"></i>Simple</span>
-          <span><i style="background:var(--sky)"></i>Discrete, m times a year</span>
-          <span><i style="background:var(--navy)"></i>Continuous</span>
-        </div>
-        <div class="tip" id="tip"></div>
-      </div>
-
-      <div class="stats">
-        <div class="stat" style="--c:var(--gray)">
-          <div class="t">Simple</div><div class="v" id="sS">–</div>
-          <div class="f">M₀ (1 + r n)</div>
-        </div>
-        <div class="stat" style="--c:var(--sky)">
-          <div class="t">Discrete</div><div class="v" id="sD">–</div>
-          <div class="f">M₀ (1 + r/m)<sup>mn</sup></div>
-        </div>
-        <div class="stat" style="--c:var(--navy)">
-          <div class="t">Continuous</div><div class="v" id="sC">–</div>
-          <div class="f">M₀ e<sup>rn</sup></div>
-        </div>
-      </div>
-    </section>
+  <div class="readout">
+    <div class="res" style="--c:var(--gray)">
+      <div class="name"><span class="key"></span>Simple</div>
+      <div class="val" id="vS"></div>
+    </div>
+    <div class="res" style="--c:var(--sky)">
+      <div class="name"><span class="key"></span>Discrete</div>
+      <div class="val" id="vD"></div>
+    </div>
+    <div class="res" style="--c:var(--navy)">
+      <div class="name"><span class="key dash"></span>Continuous</div>
+      <div class="val" id="vC"></div>
+    </div>
+    <div class="gain">
+      <p>Interest on interest earns you</p>
+      <strong id="vG"></strong>
+      <p id="vGp"></p>
+    </div>
   </div>
+  <div class="stage" id="stage">
+    <svg id="svg" viewBox="0 0 1000 470" role="img" aria-labelledby="chartDesc">
+      <desc id="chartDesc">Value of the investment over time under simple, discrete and continuous compounding.</desc>
+    </svg>
+    <div class="tip" id="tip" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label for="M"><span>Initial investment</span> <output id="oM"></output></label>
+      <input id="M" type="range" min="10" max="10000" step="10" value="1000">
+    </div>
+    <div class="ctrl">
+      <label for="R"><span>Annual rate <i>r</i></span> <output id="oR"></output></label>
+      <input id="R" type="range" min="0" max="25" step="0.25" value="8">
+    </div>
+    <div class="ctrl">
+      <label for="N"><span>Horizon</span> <output id="oN"></output></label>
+      <input id="N" type="range" min="1" max="60" step="1" value="30">
+    </div>
+    <div class="ctrl">
+      <label id="mLab"><span>Compounding per year <i>m</i></span> <output id="oMf"></output></label>
+      <div class="seg" role="group" aria-labelledby="mLab" id="seg">
+        <button data-m="1" aria-pressed="false">1</button>
+        <button data-m="2" aria-pressed="false">2</button>
+        <button data-m="4" aria-pressed="true">4</button>
+        <button data-m="12" aria-pressed="false">12</button>
+        <button data-m="365" aria-pressed="false">365</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
-<footer>Paul_Wilmott · Volume I · Chapter 01 — Markets &amp; Products</footer>
+<footer class="wrap">Paul_Wilmott, Volume I, Chapter 01: Markets &amp; Products</footer>
 
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const svg = $('svg'), tip = $('tip'), box = $('chartBox');
-  const W = 640, H = 380, L = 62, R = 18, T = 18, B = 42;
+  const svg = $('svg'), tip = $('tip'), stage = $('stage');
   const NS = 'http://www.w3.org/2000/svg';
-  let m = 1;
+  let W = 1000, H = 470, L = 70, R = 24; const T = 20, B = 44;
+  const C = { gray:'#A3ACBD', sky:'#688CCF', navy:'#2C4778', soft:'#5D6B86', line:'#E6EBF3' };
+  let m = 4, first = true, st = {};
 
-  const fmt = v => '$' + (v >= 1e6 ? (v/1e6).toFixed(2) + 'M'
-                     : v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-  const short = v => v >= 1e6 ? (v/1e6).toFixed(1).replace(/\.0$/,'') + 'M'
-                   : v >= 1e3 ? (v/1e3).toFixed(1).replace(/\.0$/,'') + 'k'
-                   : String(Math.round(v));
+  const money = v => '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const compact = v => v >= 1e6 ? '$' + (v/1e6).toFixed(v >= 1e7 ? 0 : 1) + 'M'
+                     : v >= 1e3 ? '$' + (v/1e3).toFixed(v >= 1e4 ? 0 : 1).replace(/\.0$/,'') + 'k'
+                     : '$' + Math.round(v);
+  const nice = (range, n) => { const r = range/n, p = 10 ** Math.floor(Math.log10(r)), f = r/p;
+                               return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p; };
+  const el = (tag, a, parent) => { const e = document.createElementNS(NS, tag);
+                                   for (const k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; };
 
-  function niceStep(range, ticks){
-    const raw = range / ticks, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
-    return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+  const fS = (M0, r, t) => M0 * (1 + r*t);
+  const fD = (M0, r, t) => M0 * Math.pow(1 + r/m, m*t);
+  const fC = (M0, r, t) => M0 * Math.exp(r*t);
+
+  function setFill(input){
+    const p = (input.value - input.min) / (input.max - input.min) * 100;
+    input.style.setProperty('--p', p + '%');
   }
-  function el(name, attrs, parent){
-    const e = document.createElementNS(NS, name);
-    for (const k in attrs) e.setAttribute(k, attrs[k]);
-    (parent || svg).appendChild(e); return e;
-  }
 
-  const simple = (M0, r, t) => M0 * (1 + r * t);
-  const discrete = (M0, r, t) => M0 * Math.pow(1 + r / m, m * t);
-  const cont = (M0, r, t) => M0 * Math.exp(r * t);
-
-  let state = {};
-
-  function draw(){
+  function render(){
+    const narrow = stage.clientWidth < 640;
+    W = narrow ? 520 : 1000; H = narrow ? 460 : 470; L = narrow ? 52 : 70; R = narrow ? 14 : 24;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     const M0 = +$('M').value, r = +$('R').value / 100, N = +$('N').value;
-    $('vM').textContent = '$' + M0; $('vR').textContent = (r*100).toFixed(1) + '%';
-    $('vN').textContent = N + (N > 1 ? ' years' : ' year'); $('vMf').textContent = m;
+    ['M','R','N'].forEach(id => setFill($(id)));
+    $('oM').textContent = '$' + M0.toLocaleString('en-US');
+    $('oR').textContent = (r*100).toFixed(2).replace(/\.?0+$/,'') + '%';
+    $('oN').textContent = N + (N === 1 ? ' year' : ' years');
+    $('oMf').textContent = m;
 
-    const yMax0 = Math.max(cont(M0, r, N), simple(M0, r, N), M0 * 1.05);
-    const step = niceStep(yMax0 - 0, 5), yMax = Math.ceil(yMax0 / step) * step;
-    const xs = t => L + (t / N) * (W - L - R);
-    const ys = v => H - B - (v / yMax) * (H - T - B);
-    state = {M0, r, N, xs, ys};
+    const top = Math.max(fC(M0, r, N), fS(M0, r, N), M0 * 1.1);
+    const step = nice(top, 5), yMax = Math.ceil(top / step) * step;
+    const x = t => L + t / N * (W - L - R);
+    const y = v => H - B - v / yMax * (H - T - B);
+    st = {M0, r, N, x, y};
 
-    svg.innerHTML = '';
-    // grid + y ticks
+    svg.querySelectorAll(':scope > :not(desc)').forEach(n => n.remove());
+    const defs = el('defs', {});
+    const g = el('linearGradient', {id:'bonus', x1:0, y1:0, x2:0, y2:1}, defs);
+    el('stop', {offset:'0%', 'stop-color':C.sky, 'stop-opacity':.32}, g);
+    el('stop', {offset:'100%', 'stop-color':C.sky, 'stop-opacity':.04}, g);
+
+    // grid
+    const ax = el('g', {class:'axis'});
     for (let v = 0; v <= yMax + 1e-9; v += step){
-      el('line', {x1: L, x2: W - R, y1: ys(v), y2: ys(v), stroke: '#EEF1F5'});
-      const t = el('text', {x: L - 8, y: ys(v) + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#6B7785'});
-      t.textContent = '$' + short(v);
+      el('line', {x1:L, x2:W-R, y1:y(v), y2:y(v), stroke:C.line}, ax);
+      el('text', {x:L-12, y:y(v)+4, 'text-anchor':'end'}, ax).textContent = compact(v);
     }
-    // x ticks
-    const xstep = niceStep(N, 6);
-    for (let t = 0; t <= N + 1e-9; t += xstep){
-      el('line', {x1: xs(t), x2: xs(t), y1: H - B, y2: H - B + 5, stroke: '#C9D0DA'});
-      const tx = el('text', {x: xs(t), y: H - B + 18, 'text-anchor': 'middle', 'font-size': 11, fill: '#6B7785'});
-      tx.textContent = t;
-    }
-    el('line', {x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: '#C9D0DA'});
-    const xl = el('text', {x: (L + W - R) / 2, y: H - 6, 'text-anchor': 'middle', 'font-size': 12, fill: '#6B7785'});
-    xl.textContent = 'Years';
+    const xs = nice(N, narrow ? 4 : 6);
+    for (let t = 0; t <= N + 1e-9; t += xs)
+      el('text', {x:x(t), y:H-B+22, 'text-anchor':'middle'}, ax).textContent = t === 0 ? 'Today' : t + 'y';
 
     // curves
-    const path = f => {
-      let d = '', n = 240;
-      for (let i = 0; i <= n; i++){
-        const t = N * i / n;
-        d += (i ? 'L' : 'M') + xs(t).toFixed(2) + ' ' + ys(f(M0, r, t)).toFixed(2);
-      }
-      return d;
+    const pts = (f, n = 300) => Array.from({length:n+1}, (_, i) => { const t = N*i/n; return [x(t), y(f(M0, r, t))]; });
+    const d = p => p.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('');
+    const pS = pts(fS), pC = pts(fC), pD = pts(fD);
+
+    // shaded "interest on interest" area between simple and discrete
+    el('path', {d: d(pD) + pS.slice().reverse().map(q => 'L' + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('') + 'Z',
+                fill:'url(#bonus)', class: first ? 'fade' : ''});
+
+    const curve = (p, color, w, dash) => {
+      const e = el('path', {d:d(p), fill:'none', stroke:color, 'stroke-width':w, 'stroke-linecap':'round', 'stroke-linejoin':'round'});
+      if (dash) e.setAttribute('stroke-dasharray', dash);
+      else if (first){ const len = e.getTotalLength(); e.style.setProperty('--len', len); e.classList.add('draw'); }
+      return e;
     };
-    el('path', {d: path(simple),   fill: 'none', stroke: '#9AA3B2', 'stroke-width': 2.2, 'stroke-linecap': 'round'});
-    el('path', {d: path(discrete), fill: 'none', stroke: '#688CCF', 'stroke-width': 2.6, 'stroke-linecap': 'round'});
-    el('path', {d: path(cont),     fill: 'none', stroke: '#2C4778', 'stroke-width': 2.2, 'stroke-dasharray': '6 5', 'stroke-linecap': 'round'});
+    curve(pS, C.gray, 2.4);
+    curve(pD, C.sky, 3.2);
+    const cc = curve(pC, C.navy, 2, '2 6');
+    if (first) cc.classList.add('fade');
 
-    // hover layer
-    state.cursor = el('line', {x1: 0, x2: 0, y1: T, y2: H - B, stroke: '#2C4778', 'stroke-opacity': .25, visibility: 'hidden'});
-    state.dots = ['#9AA3B2', '#688CCF', '#2C4778'].map(c =>
-      el('circle', {r: 4, fill: '#fff', stroke: c, 'stroke-width': 2, visibility: 'hidden'}));
-    const hit = el('rect', {x: L, y: T, width: W - L - R, height: H - T - B, fill: 'transparent'});
+    // end dots
+    [[fS(M0, r, N), C.gray], [fD(M0, r, N), C.sky], [fC(M0, r, N), C.navy]].forEach(([v, c]) =>
+      el('circle', {cx:x(N), cy:y(v), r:4, fill:'#fff', stroke:c, 'stroke-width':2, class: first ? 'fade' : ''}));
+
+    // hover
+    st.cursor = el('line', {y1:T, y2:H-B, stroke:C.navy, 'stroke-opacity':.2, 'stroke-width':1, visibility:'hidden'});
+    st.dots = [C.gray, C.sky, C.navy].map(c => el('circle', {r:5, fill:'#fff', stroke:c, 'stroke-width':2.5, visibility:'hidden'}));
+    const hit = el('rect', {x:L, y:T, width:W-L-R, height:H-T-B, fill:'transparent'});
     hit.addEventListener('pointermove', hover);
-    hit.addEventListener('pointerleave', () => {
-      tip.style.opacity = 0; state.cursor.setAttribute('visibility', 'hidden');
-      state.dots.forEach(d => d.setAttribute('visibility', 'hidden'));
-    });
+    hit.addEventListener('pointerdown', hover);
+    hit.addEventListener('pointerleave', hide);
 
-    $('sS').textContent = fmt(simple(M0, r, N));
-    $('sD').textContent = fmt(discrete(M0, r, N));
-    $('sC').textContent = fmt(cont(M0, r, N));
+    // readout
+    const s = fS(M0, r, N), dd = fD(M0, r, N), c = fC(M0, r, N);
+    $('vS').textContent = money(s); $('vD').textContent = money(dd); $('vC').textContent = money(c);
+    $('vG').textContent = '+' + money(dd - s);
+    $('vGp').textContent = s > M0 ? (((dd - s) / (s - M0)) * 100).toFixed(0) + '% more interest than simple' : 'at this rate';
+    first = false;
   }
 
   function hover(e){
-    const {M0, r, N, xs, ys} = state;
+    const {M0, r, N, x, y} = st;
     const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
     const p = pt.matrixTransform(svg.getScreenCTM().inverse());
     const t = Math.max(0, Math.min(N, (p.x - L) / (W - L - R) * N));
-    const vals = [simple(M0, r, t), discrete(M0, r, t), cont(M0, r, t)];
-    state.cursor.setAttribute('x1', xs(t)); state.cursor.setAttribute('x2', xs(t));
-    state.cursor.setAttribute('visibility', 'visible');
-    state.dots.forEach((d, i) => { d.setAttribute('cx', xs(t)); d.setAttribute('cy', ys(vals[i])); d.setAttribute('visibility', 'visible'); });
-    tip.innerHTML = '<b>Year ' + t.toFixed(1) + '</b><br>Simple ' + fmt(vals[0]) +
-                    '<br>Discrete ' + fmt(vals[1]) + '<br>Continuous ' + fmt(vals[2]);
-    const rb = box.getBoundingClientRect();
-    let x = e.clientX - rb.left + 14, y = e.clientY - rb.top - 10;
-    if (x + 170 > rb.width) x -= 190;
-    tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.style.opacity = 1;
+    const v = [fS(M0, r, t), fD(M0, r, t), fC(M0, r, t)];
+    st.cursor.setAttribute('x1', x(t)); st.cursor.setAttribute('x2', x(t)); st.cursor.setAttribute('visibility', 'visible');
+    st.dots.forEach((d, i) => { d.setAttribute('cx', x(t)); d.setAttribute('cy', y(v[i])); d.setAttribute('visibility', 'visible'); });
+    const yr = t < 0.05 ? 'Today' : 'After ' + t.toFixed(1) + ' years';
+    tip.innerHTML = '<div class="yr">' + yr + '</div>' +
+      [['Simple', C.gray, v[0]], ['Discrete', C.sky, v[1]], ['Continuous', C.navy, v[2]]]
+        .map(q => '<div class="row" style="--c:' + q[1] + '"><span>' + q[0] + '</span><span>' + money(q[2]) + '</span></div>').join('');
+    const rb = stage.getBoundingClientRect();
+    let lx = e.clientX - rb.left + 18, ly = e.clientY - rb.top - 30;
+    if (lx + 200 > rb.width) lx = e.clientX - rb.left - 218;
+    tip.style.left = Math.max(0, lx) + 'px'; tip.style.top = Math.max(0, ly) + 'px'; tip.classList.add('on');
+  }
+  function hide(){
+    tip.classList.remove('on'); st.cursor.setAttribute('visibility', 'hidden');
+    st.dots.forEach(d => d.setAttribute('visibility', 'hidden'));
   }
 
-  ['M', 'R', 'N'].forEach(id => $(id).addEventListener('input', draw));
+  ['M','R','N'].forEach(id => $(id).addEventListener('input', render));
   document.querySelectorAll('#seg button').forEach(b => b.addEventListener('click', () => {
-    document.querySelectorAll('#seg button').forEach(x => x.classList.remove('on'));
-    b.classList.add('on'); m = +b.dataset.m; draw();
+    document.querySelectorAll('#seg button').forEach(x => x.setAttribute('aria-pressed', 'false'));
+    b.setAttribute('aria-pressed', 'true'); m = +b.dataset.m; render();
   }));
-  draw();
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 120); });
+  render();
 })();
 </script>
 </body>
