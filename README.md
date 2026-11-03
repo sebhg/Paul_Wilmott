@@ -16,4 +16,4 @@ Each chapter is summarized in a single PDF written in LaTeX, with interactive ch
 
 The Price of Time
 
-[Read the PDF →](01_Markets_and_Products/01_Markets_and_Products.pdf) &nbsp;&nbsp;·&nbsp;&nbsp; [Interactive charts →](https://sebhg.github.io/Paul_Wilmott/visualizations/01_compounding.html)
+[Read the PDF →](01_Markets_and_Products/01_Markets_and_Products-3.pdf) &nbsp;&nbsp;·&nbsp;&nbsp; [Interactive charts →](https://sebhg.github.io/Paul_Wilmott/visualizations/01_compounding.html)
