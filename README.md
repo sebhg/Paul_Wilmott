@@ -6,12 +6,12 @@
 Quantitative finance concepts, demonstrated and illustrated by charts.
 Each chapter is summarized in a single PDF written in LaTeX.
 
-<img src="assets/progress.svg" alt="Progress" width="360">
-
 &nbsp;
 
 ## Contents
 
-| | Chapter | Topics | |
-|:--|:--|:--|--:|
-| **01** | **Markets & Products** | The Price of Time | [PDF](01_Markets_and_Products/01_Markets_and_Products.pdf) |
+### 01 &nbsp;·&nbsp; Markets & Products &nbsp;&nbsp; <img src="assets/ch01.svg" height="16">
+
+The Price of Time
+
+[Read the PDF →](01_Markets_and_Products/01_Markets_and_Products.pdf)
