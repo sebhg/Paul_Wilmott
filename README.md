@@ -11,7 +11,3 @@ Each chapter is summarized in a PDF written in LaTeX.
 - Interest rates
 - Equities
 - Forwards & Futures
-
-## License
-
-This project is licensed under the MIT License — see [LICENSE](LICENSE).
