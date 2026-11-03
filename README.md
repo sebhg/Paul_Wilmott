@@ -8,6 +8,4 @@ Each chapter is summarized in a PDF written in LaTeX.
 
 ### 01 — Markets & Products · [PDF](01_Markets_and_Products/01_Markets_and_Products.pdf)
 
-- Interest rates
-- Equities
-- Forwards & Futures
+- The Price of Time
