@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Price of Time — Interactive</title>
+<style>
+  :root{
+    --sky:#688CCF; --navy:#2C4778; --ink:#1F2933; --mute:#6B7785;
+    --paper:#F6F8FA; --line:#E3E8EF; --gray:#9AA3B2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff;color:var(--ink);
+       font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  header{background:linear-gradient(90deg,var(--sky),var(--navy));color:#fff;
+         padding:28px 16px 30px;position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;right:-80px;top:-120px;width:320px;height:320px;
+         border-radius:50%;background:rgba(255,255,255,.06)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 16px}
+  header .wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
+  .num{font-size:52px;font-weight:700;line-height:1;opacity:.92}
+  .kicker{font-size:11px;font-weight:700;letter-spacing:.08em}
+  h1{margin:2px 0 2px;font-size:26px;line-height:1.2}
+  .sub{font-size:14px;opacity:.9}
+  .vol{margin-left:auto;text-align:right;font-size:12px}
+  .vol span{display:inline-block;border:1px solid #fff;border-radius:4px;padding:2px 8px;
+            font-weight:700;font-size:11px;letter-spacing:.06em;margin-bottom:6px}
+  main{padding:28px 0 40px}
+  .grid{display:grid;grid-template-columns:280px 1fr;gap:24px}
+  @media (max-width:760px){.grid{grid-template-columns:1fr}.vol{margin-left:0;text-align:left}}
+  .card{background:var(--paper);border-radius:10px;padding:16px}
+  .ctrl{margin-bottom:18px}
+  .ctrl:last-child{margin-bottom:0}
+  .ctrl label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px}
+  .ctrl label b{color:var(--navy);font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--navy)}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg button{flex:1 1 auto;border:1px solid var(--line);background:#fff;color:var(--ink);
+              border-radius:6px;padding:5px 6px;font:600 12px inherit;cursor:pointer}
+  .seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .chart{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;position:relative}
+  svg{display:block;width:100%;height:auto}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;padding:6px 8px 2px}
+  .legend i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+  .tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;
+       border-radius:6px;padding:6px 8px;opacity:0;transition:opacity .1s;white-space:nowrap}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+  @media (max-width:560px){.stats{grid-template-columns:1fr}}
+  .stat{background:var(--paper);border-radius:10px;padding:12px 14px;border-left:3px solid var(--c)}
+  .stat .t{font-size:12px;color:var(--mute);font-weight:600}
+  .stat .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+  .stat .f{font-size:12px;color:var(--mute);font-family:Georgia,serif;font-style:italic}
+  footer{color:var(--mute);font-size:12px;text-align:center;padding:0 16px 28px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="num">01</div>
+    <div>
+      <div class="kicker">CHAPTER 01 · INTERACTIVE</div>
+      <h1>The Price of Time</h1>
+      <div class="sub">Simple, discrete and continuous compounding</div>
+    </div>
+    <div class="vol"><span>VOLUME I</span><br>Paul Wilmott on<br>Quantitative Finance</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <aside class="card">
+      <div class="ctrl">
+        <label>Initial investment <b id="vM">$100</b></label>
+        <input id="M" type="range" min="1" max="1000" step="1" value="100">
+      </div>
+      <div class="ctrl">
+        <label>Annual rate r <b id="vR">5.0%</b></label>
+        <input id="R" type="range" min="0" max="30" step="0.5" value="5">
+      </div>
+      <div class="ctrl">
+        <label>Horizon <b id="vN">30 years</b></label>
+        <input id="N" type="range" min="1" max="60" step="1" value="30">
+      </div>
+      <div class="ctrl">
+        <label>Compounding per year m <b id="vMf">1</b></label>
+        <div class="seg" id="seg">
+          <button data-m="1" class="on">1</button>
+          <button data-m="2">2</button>
+          <button data-m="4">4</button>
+          <button data-m="12">12</button>
+          <button data-m="365">365</button>
+        </div>
+      </div>
+    </aside>
+
+    <section>
+      <div class="chart" id="chartBox">
+        <svg id="svg" viewBox="0 0 640 380" role="img" aria-label="Growth of an investment under three compounding conventions"></svg>
+        <div class="legend">
+          <span><i style="background:var(--gray)"></i>Simple</span>
+          <span><i style="background:var(--sky)"></i>Discrete, m times a year</span>
+          <span><i style="background:var(--navy)"></i>Continuous</span>
+        </div>
+        <div class="tip" id="tip"></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat" style="--c:var(--gray)">
+          <div class="t">Simple</div><div class="v" id="sS">–</div>
+          <div class="f">M₀ (1 + r n)</div>
+        </div>
+        <div class="stat" style="--c:var(--sky)">
+          <div class="t">Discrete</div><div class="v" id="sD">–</div>
+          <div class="f">M₀ (1 + r/m)<sup>mn</sup></div>
+        </div>
+        <div class="stat" style="--c:var(--navy)">
+          <div class="t">Continuous</div><div class="v" id="sC">–</div>
+          <div class="f">M₀ e<sup>rn</sup></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>Paul_Wilmott · Volume I · Chapter 01 — Markets &amp; Products</footer>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const svg = $('svg'), tip = $('tip'), box = $('chartBox');
+  const W = 640, H = 380, L = 62, R = 18, T = 18, B = 42;
+  const NS = 'http://www.w3.org/2000/svg';
+  let m = 1;
+
+  const fmt = v => '$' + (v >= 1e6 ? (v/1e6).toFixed(2) + 'M'
+                     : v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+  const short = v => v >= 1e6 ? (v/1e6).toFixed(1).replace(/\.0$/,'') + 'M'
+                   : v >= 1e3 ? (v/1e3).toFixed(1).replace(/\.0$/,'') + 'k'
+                   : String(Math.round(v));
+
+  function niceStep(range, ticks){
+    const raw = range / ticks, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+    return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+  }
+  function el(name, attrs, parent){
+    const e = document.createElementNS(NS, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    (parent || svg).appendChild(e); return e;
+  }
+
+  const simple = (M0, r, t) => M0 * (1 + r * t);
+  const discrete = (M0, r, t) => M0 * Math.pow(1 + r / m, m * t);
+  const cont = (M0, r, t) => M0 * Math.exp(r * t);
+
+  let state = {};
+
+  function draw(){
+    const M0 = +$('M').value, r = +$('R').value / 100, N = +$('N').value;
+    $('vM').textContent = '$' + M0; $('vR').textContent = (r*100).toFixed(1) + '%';
+    $('vN').textContent = N + (N > 1 ? ' years' : ' year'); $('vMf').textContent = m;
+
+    const yMax0 = Math.max(cont(M0, r, N), simple(M0, r, N), M0 * 1.05);
+    const step = niceStep(yMax0 - 0, 5), yMax = Math.ceil(yMax0 / step) * step;
+    const xs = t => L + (t / N) * (W - L - R);
+    const ys = v => H - B - (v / yMax) * (H - T - B);
+    state = {M0, r, N, xs, ys};
+
+    svg.innerHTML = '';
+    // grid + y ticks
+    for (let v = 0; v <= yMax + 1e-9; v += step){
+      el('line', {x1: L, x2: W - R, y1: ys(v), y2: ys(v), stroke: '#EEF1F5'});
+      const t = el('text', {x: L - 8, y: ys(v) + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#6B7785'});
+      t.textContent = '$' + short(v);
+    }
+    // x ticks
+    const xstep = niceStep(N, 6);
+    for (let t = 0; t <= N + 1e-9; t += xstep){
+      el('line', {x1: xs(t), x2: xs(t), y1: H - B, y2: H - B + 5, stroke: '#C9D0DA'});
+      const tx = el('text', {x: xs(t), y: H - B + 18, 'text-anchor': 'middle', 'font-size': 11, fill: '#6B7785'});
+      tx.textContent = t;
+    }
+    el('line', {x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: '#C9D0DA'});
+    const xl = el('text', {x: (L + W - R) / 2, y: H - 6, 'text-anchor': 'middle', 'font-size': 12, fill: '#6B7785'});
+    xl.textContent = 'Years';
+
+    // curves
+    const path = f => {
+      let d = '', n = 240;
+      for (let i = 0; i <= n; i++){
+        const t = N * i / n;
+        d += (i ? 'L' : 'M') + xs(t).toFixed(2) + ' ' + ys(f(M0, r, t)).toFixed(2);
+      }
+      return d;
+    };
+    el('path', {d: path(simple),   fill: 'none', stroke: '#9AA3B2', 'stroke-width': 2.2, 'stroke-linecap': 'round'});
+    el('path', {d: path(discrete), fill: 'none', stroke: '#688CCF', 'stroke-width': 2.6, 'stroke-linecap': 'round'});
+    el('path', {d: path(cont),     fill: 'none', stroke: '#2C4778', 'stroke-width': 2.2, 'stroke-dasharray': '6 5', 'stroke-linecap': 'round'});
+
+    // hover layer
+    state.cursor = el('line', {x1: 0, x2: 0, y1: T, y2: H - B, stroke: '#2C4778', 'stroke-opacity': .25, visibility: 'hidden'});
+    state.dots = ['#9AA3B2', '#688CCF', '#2C4778'].map(c =>
+      el('circle', {r: 4, fill: '#fff', stroke: c, 'stroke-width': 2, visibility: 'hidden'}));
+    const hit = el('rect', {x: L, y: T, width: W - L - R, height: H - T - B, fill: 'transparent'});
+    hit.addEventListener('pointermove', hover);
+    hit.addEventListener('pointerleave', () => {
+      tip.style.opacity = 0; state.cursor.setAttribute('visibility', 'hidden');
+      state.dots.forEach(d => d.setAttribute('visibility', 'hidden'));
+    });
+
+    $('sS').textContent = fmt(simple(M0, r, N));
+    $('sD').textContent = fmt(discrete(M0, r, N));
+    $('sC').textContent = fmt(cont(M0, r, N));
+  }
+
+  function hover(e){
+    const {M0, r, N, xs, ys} = state;
+    const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const t = Math.max(0, Math.min(N, (p.x - L) / (W - L - R) * N));
+    const vals = [simple(M0, r, t), discrete(M0, r, t), cont(M0, r, t)];
+    state.cursor.setAttribute('x1', xs(t)); state.cursor.setAttribute('x2', xs(t));
+    state.cursor.setAttribute('visibility', 'visible');
+    state.dots.forEach((d, i) => { d.setAttribute('cx', xs(t)); d.setAttribute('cy', ys(vals[i])); d.setAttribute('visibility', 'visible'); });
+    tip.innerHTML = '<b>Year ' + t.toFixed(1) + '</b><br>Simple ' + fmt(vals[0]) +
+                    '<br>Discrete ' + fmt(vals[1]) + '<br>Continuous ' + fmt(vals[2]);
+    const rb = box.getBoundingClientRect();
+    let x = e.clientX - rb.left + 14, y = e.clientY - rb.top - 10;
+    if (x + 170 > rb.width) x -= 190;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.style.opacity = 1;
+  }
+
+  ['M', 'R', 'N'].forEach(id => $(id).addEventListener('input', draw));
+  document.querySelectorAll('#seg button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#seg button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on'); m = +b.dataset.m; draw();
+  }));
+  draw();
+})();
+</script>
+</body>
+</html>
